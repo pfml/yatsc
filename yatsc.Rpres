@@ -1,0 +1,60 @@
+YATSC : Yet Another Titanic Survival Calculator
+========================================================
+author: Pierre Lecointre
+date: 20150426
+transition: rotate
+
+<small>
+Shiny application and RStudio Presenter developped as an assignment for the
+"Developping Data products" course taught on Coursera by John Hopkins University.
+</small>
+
+Titanic passenger survival prediction
+========================================================
+
+**Titanic** was a British passenger liner that sank in Northen Atlantic in 1912, after a collision with an iceberg, occuring more than 1,500 fatalities.
+
+It is said that "Women and children first" was not the only determinant of passenger survivability. In particular, class seems an important determinant.
+
+In order to set up a Titanic survival calculator, I will use the dataset `titanic3`, an updated and improved `titanic` (thanks to Thomas Cason) dataset, available on the website of the department of biostatistics of Vanderbilt University :  
+http://biostat.mc.vanderbilt.edu/wiki/pub/Main/DataSets/titanic3.csv
+
+Summary of dataset
+========================================================
+```{r, echo=FALSE}
+titanic <- read.csv("titanic3.csv")
+```
+
+<small>
+The dataset `titanic3` contains `r dim(titanic)[1]` records of `r dim(titanic)[2]` variables :
+```{r, echo=FALSE}
+names(titanic)
+```
+
+Some variables contains a high number of missing values (`r sum(is.na(titanic$age))` for the variable `age`).
+
+So, the prediction will only be based on `pclass`, `sex`, `fare`, `embarked` and a new variable `rel`, number of relatives aboard, sum of `sibsp` and `parch`.
+
+***
+
+```{r, echo=FALSE}
+head(titanic, 3)
+```
+</small>
+Prediction calculation
+========================================================
+
+Using library `randomForest`, I have fitted a random forest model on the revised `titanic3` dataset named `train`: 
+```{r, eval=FALSE}
+fit <- randomForest(as.factor(survived) ~ ., data = train, importance =TRUE, ntree=2000)
+```
+
+A `predict` function accepts the user input as new data, and returns the prediction as a binomial factor (will survive / will not survive), sent to the UI by the `server` object.
+
+Prediction Results
+===
+The interactive shiny application can be accessed at this link :   
+https://pfml.shinyapps.io/yatsc/
+
+Details of the code are available at this GitHub repo :   
+https://github.com/pfml/yatsc/tree/master
